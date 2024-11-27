@@ -1,0 +1,44 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+
+def validate_reimbursement():
+    # Set up the WebDriver (adjust the path to your WebDriver)
+    driver = webdriver.Chrome(executable_path='/path/to/chromedriver')
+
+    try:
+        # Step 1: Open the web application
+        url = 'http://example.com' # Replace with the actual URL
+        driver.get(url)
+        
+        # Step 2: Wait until the page is fully loaded (adjust as necessary)
+        wait = WebDriverWait(driver, 10) # Wait for up to 10 seconds
+        header = wait.until(EC.presence_of_element_located((By.ID, 'total-recurring-header')))
+        
+        # Step 3: Locate the Total Recurring Reimbursement value
+        reimbursement_value = driver.find_element(By.ID, 'total-recurring-value') # Replace with the actual ID
+        
+        # Step 4: Validate the reimbursement value
+        expected_value = "$110700"
+        actual_value = reimbursement_value.text.strip()
+        
+        if actual_value == expected_value:
+            print("Validation Successful: The reimbursement value is correct.")
+        else:
+            print(f"Validation Failed: Expected '{expected_value}', but got '{actual_value}'.")
+
+    except NoSuchElementException as e:
+        print("Error: Element not found. Please check the element locators.", e)
+    except TimeoutException as e:
+        print("Error: Page took too long to load or element not found in time.", e)
+    except Exception as e:
+        print("An unexpected error occurred:", e)
+    finally:
+        # Close the WebDriver
+        driver.quit()
+
+if __name__ == "__main__":
+    validate_reimbursement()
